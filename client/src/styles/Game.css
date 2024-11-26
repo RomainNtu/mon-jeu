@@ -1,0 +1,65 @@
+.canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.message-box {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #2c2c2c;
+  border: 3px solid #555;
+  padding: 10px;
+  border-radius: 10px;
+  height: 145px;
+  width: 1255px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.message-list {
+  height: 110px;
+}
+
+.message {
+  margin-bottom: 5px;
+}
+
+.message.own {
+  text-align: right;
+  color: #0f0;
+}
+
+.message.other {
+  text-align: left;
+  color: #ddd;
+}
+
+.input-container {
+  margin-top: 10px;
+  display: flex;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+}
+
+.input-field {
+  flex: 1;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: #3a3a3a;
+  color: #fff;
+  border: 1px solid #666;
+}
+
+.send-button {
+  margin-left: 10px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  background-color: #555;
+  color: #fff;
+  border: 1px solid #777;
+  cursor: pointer;
+}

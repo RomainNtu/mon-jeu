@@ -43,35 +43,21 @@ app.post("/login", async (req, res) => {
 io.on("connection", (socket) => {
     console.log(`Nouvel utilisateur connecté : ${socket.id}`);
 
-    // Listen to player movements
     socket.on("player_move", (data) => {
-        // Broadcast the message to all clients except the sender
-        socket.broadcast.emit("player_move", { id: socket.id, ...data });
+        socket.broadcast.emit("player_move", data);
     });
 
-    // Listen to player messages
     socket.on("player_message", (data) => {
-        // Broadcast the message to all clients
         io.emit("player_message", data);
     });
 
-    // Listen to player disconnections
     socket.on("disconnect", () => {
+        io.emit("player_disconnect", socket.id);
         console.log(`Utilisateur déconnecté : ${socket.id}`);
-        // Inform other clients of the disconnection
-        socket.broadcast.emit("player_disconnect", socket.id);
-    });
-
-    // Listen to manual disconnections
-    socket.on("player_disconnect", () => {
-        console.log(`Utilisateur déconnecté manuellement : ${socket.id}`);
-        // Inform other clients of the disconnection
-        socket.broadcast.emit("player_disconnect", socket.id);
     });
 });
 
-// Start the server
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
-    console.log(`Serveur lancé sur http://localhost:${PORT}`);
+    console.log(`Serveur démarré sur le port ${PORT}`);
 });
