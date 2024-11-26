@@ -188,24 +188,24 @@ const Game = ({ user, token }) => {
 
   return (
     <div>
-      <div ref={canvasRef}></div>
-      <div>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-        />
-        <button onClick={handleSendMessage}>Send</button>
+  <div ref={canvasRef}></div>
+  <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+    {messages.slice(-5).map((msg, index) => (
+      <div key={index}>
+        <strong>{msg.username}:</strong> {msg.message}
       </div>
-      <div>
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.username}:</strong> {msg.message}
-          </div>
-        ))}
-      </div>
-    </div>
+    ))}
+  </div>
+  <div>
+    <input
+      type="text"
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+    />
+    <button onClick={handleSendMessage}>Send</button>
+  </div>
+</div>
   );
 };
 
