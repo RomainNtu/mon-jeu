@@ -1,14 +1,15 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 // Database connection
 const pool = new Pool({
-  user: 'postgres',         // User PostgreSQL
-  host: 'localhost',         // Host PostgreSQL
-  database: 'game_db',       // Database PostgreSQL
-  password: 'Romainn239', // Password PostgreSQL
-  port: 5432,                // Port PostgreSQL
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
 });
 
 // Request to the database
@@ -26,7 +27,7 @@ const authenticateUser = async (username, password) => {
   const result = await query('SELECT * FROM players WHERE username = $1', [username]);
   const user = result.rows[0];
   if (user && await bcrypt.compare(password, user.password)) {
-    const token = jwt.sign({ id: user.id, username: user.username }, 'your_jwt_secret');
+    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET);
     return { user, token };
   }
   throw new Error('Invalid username or password');
