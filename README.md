@@ -147,7 +147,7 @@ mon-jeu/
 │   ├── .env
 │   ├── package.json
 │   └── .gitignore
-└── [README.md](http://_vscodecontentref_/1)
+└── README.md
 ```
 
 ---
