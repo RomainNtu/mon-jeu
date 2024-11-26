@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
 import axios from "axios";
 import socket from "../socket";
+import "../styles/Game.css";
 
 const Game = ({ user, token }) => {
   const canvasRef = useRef(null);
@@ -22,22 +23,23 @@ const Game = ({ user, token }) => {
     const app = new PIXI.Application({
       width: 1280,
       height: 720,
-      backgroundColor: 0x1099bb,
+      backgroundColor: 0x2879b8,
     });
     canvasRef.current.appendChild(app.view);
 
-    // Create a limited background rectangle for chat
-    const backgroundRect = new PIXI.Graphics();
-    backgroundRect.beginFill(0x8fa1af);
-    backgroundRect.drawRect(0, 565, 1280, 160);
-    backgroundRect.endFill();
-    app.stage.addChild(backgroundRect);
-
-    // Create a platform
+    // Create a platform with some details
     const platform = new PIXI.Graphics();
     platform.beginFill(0x654321);
     platform.drawRect(0, 517.5, 1280, 50);
     platform.endFill();
+
+    // Add some details to the platform
+    const platformDetail = new PIXI.Graphics();
+    platformDetail.beginFill(0x8b4513);
+    platformDetail.drawRect(0, 517.5, 1280, 10);
+    platformDetail.endFill();
+    platform.addChild(platformDetail);
+
     app.stage.addChild(platform);
 
     // Create a player
@@ -306,29 +308,34 @@ const Game = ({ user, token }) => {
   };
 
   return (
-    <div ref={canvasRef} style={{ position: 'relative', width: '100%', height: '100%' }}>
-  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(255, 255, 255, 0.8)', border: '3px solid #ccc', padding: '10px', borderRadius: '5px', height: '130px', width: '65.9%' }}>
-    <div style={{ height: '80px' }}>
-      {messages.slice(-5).map((msg, index) => (
-        <div key={index} style={{ textAlign: msg.isOwnMessage ? 'right' : 'left' }}>
-          <strong>{msg.username}:</strong> {msg.message}
-        </div>
-      ))}
-    </div>
-    <div style={{ marginTop: '10px', display: 'flex', position: 'absolute', bottom: '10px', left: '10px', right: '10px' }}>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-        placeholder="Entrez votre message ici..."
-        maxLength={MAX_MESSAGE_LENGTH}
-        style={{ flex: 1, borderRadius: '5px', padding: '5px' }}
-      />
-      <button onClick={handleSendMessage} style={{ marginLeft: '10px', borderRadius: '5px', padding: '5px 10px' }}>Envoyer</button>
+    <div ref={canvasRef} className="canvas-container">
+    <div className="message-box">
+      <div className="message-list">
+        {messages.slice(-5).map((msg, index) => (
+          <div key={index} className={`message ${msg.isOwnMessage ? 'own' : 'other'}`}>
+            <strong>{msg.username}:</strong> {msg.message}
+          </div>
+        ))}
+      </div>
+      <div className="input-container">
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+          placeholder="Entrez votre message ici..."
+          maxLength={MAX_MESSAGE_LENGTH}
+          className="input-field"
+        />
+        <button 
+          onClick={handleSendMessage} 
+          className="send-button"
+        >
+          Envoyer
+        </button>
+      </div>
     </div>
   </div>
-</div>
   );
 };
 
