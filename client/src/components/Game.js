@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as PIXI from "pixi.js";
-import axios from "axios"; // Assurez-vous d'importer axios
+import axios from "axios";
 import socket from "../socket";
 
 const Game = ({ user, token }) => {
@@ -14,16 +14,23 @@ const Game = ({ user, token }) => {
 
     // Init PixiJS
     const app = new PIXI.Application({
-      width: 800,
-      height: 600,
+      width: 1280,
+      height: 720,
       backgroundColor: 0x1099bb,
     });
     canvasRef.current.appendChild(app.view);
 
+    // Create a limited background rectangle for chat
+    const backgroundRect = new PIXI.Graphics();
+    backgroundRect.beginFill(0x8fa1af);
+    backgroundRect.drawRect(0, 565, 1280, 160);
+    backgroundRect.endFill();
+    app.stage.addChild(backgroundRect);
+
     // Create a platform
     const platform = new PIXI.Graphics();
     platform.beginFill(0x654321);
-    platform.drawRect(0, 550, 800, 50);
+    platform.drawRect(0, 517.5, 1280, 50);
     platform.endFill();
     app.stage.addChild(platform);
 
@@ -33,7 +40,7 @@ const Game = ({ user, token }) => {
     player.drawCircle(0, 0, 20);
     player.endFill();
     player.x = 400;
-    player.y = 530; // Positioned on the platform
+    player.y = 530;
     app.stage.addChild(player);
 
     // Create a text to display the player ID
@@ -76,8 +83,8 @@ const Game = ({ user, token }) => {
         player.y += velocityY;
 
         // Collision with the platform
-        if (player.y + 20 > 550) {
-          player.y = 530;
+        if (player.y + 20 > 517.5) {
+          player.y = 517.5 - 20;
           velocityY = 0;
         }
 
@@ -86,7 +93,7 @@ const Game = ({ user, token }) => {
         if (keys["d"]) player.x += 2; // Right
 
         // Jump
-        if (keys["z"] && player.y === 530) {
+        if (keys["z"] && player.y === 517.5 - 20) {
           velocityY = jumpStrength;
         }
 
@@ -187,25 +194,30 @@ const Game = ({ user, token }) => {
   };
 
   return (
-    <div>
-  <div ref={canvasRef}></div>
-  <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-    {messages.slice(-5).map((msg, index) => (
-      <div key={index}>
-        <strong>{msg.username}:</strong> {msg.message}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+    <div ref={canvasRef} style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(255, 255, 255, 0.8)', border: '3px solid #ccc', padding: '10px', borderRadius: '5px', height: '130px', width: '65.9%' }}>
+        <div style={{ height: '80px', overflowY: 'auto' }}>
+          {messages.slice(-5).map((msg, index) => (
+            <div key={index}>
+              <strong>{msg.username}:</strong> {msg.message}
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '10px', display: 'flex', position: 'absolute', bottom: '10px', left: '10px', right: '10px' }}>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            placeholder="Entrez votre message ici..."
+            style={{ flex: 1, borderRadius: '5px', padding: '5px' }}
+          />
+          <button onClick={handleSendMessage} style={{ marginLeft: '10px', borderRadius: '5px', padding: '5px 10px' }}>Envoyer</button>
+        </div>
       </div>
-    ))}
+    </div>
   </div>
-  <div>
-    <input
-      type="text"
-      value={message}
-      onChange={(e) => setMessage(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-    />
-    <button onClick={handleSendMessage}>Send</button>
-  </div>
-</div>
   );
 };
 
