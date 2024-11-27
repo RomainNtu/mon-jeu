@@ -6,9 +6,11 @@ import "../styles/Game.css";
 
 const Game = ({ user, token }) => {
   const canvasRef = useRef(null);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { username: 'System', message: 'Bienvenue dans le jeu!', isOwnMessage: false}
+  ]);
   const [message, setMessage] = useState("");
-  const [currentUser, setCurrentUser] = useState(user);
+  const [currentUser] = useState(user);
   const playerRef = useRef(null);
   const playerMessageBubbleRef = useRef(null);
   const playerMessageTextRef = useRef(null);
@@ -30,13 +32,13 @@ const Game = ({ user, token }) => {
     // Create a platform with some details
     const platform = new PIXI.Graphics();
     platform.beginFill(0x654321);
-    platform.drawRect(0, 517.5, 1280, 50);
+    platform.drawRect(0, 490, 1280, 50);
     platform.endFill();
 
     // Add some details to the platform
     const platformDetail = new PIXI.Graphics();
     platformDetail.beginFill(0x8b4513);
-    platformDetail.drawRect(0, 517.5, 1280, 10);
+    platformDetail.drawRect(0, 490, 1280, 10);
     platformDetail.endFill();
     platform.addChild(platformDetail);
 
@@ -146,8 +148,13 @@ const Game = ({ user, token }) => {
       keys[e.key.toLowerCase()] = false;
     };
 
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("keydown", (e) => {
+      keys[e.key] = true;
+    });
+    
+    window.addEventListener("keyup", (e) => {
+      keys[e.key] = false;
+    });
 
     let velocityY = 0;
     const gravity = 0.2;
@@ -160,17 +167,21 @@ const Game = ({ user, token }) => {
         player.y += velocityY;
     
         // Collision with the platform
-        if (player.y + 20 > 517.5) {
-          player.y = 517.5 - 20;
+        if (player.y + 20 > 490) {
+          player.y = 490 - 20;
           velocityY = 0;
         }
     
         // Horizontal movement
-        if (keys["q"]) player.x -= 5; // Left
-        if (keys["d"]) player.x += 5; // Right
+        if (keys["ArrowLeft"]) {
+          player.x -= 5; // Left
+        }
+        if (keys["ArrowRight"]) {
+          player.x += 5; // Right
+        }
     
         // Jump
-        if (keys["z"] && player.y === 517.5 - 20) {
+        if (keys["ArrowUp"] && player.y === 490 - 20) {
           velocityY = jumpStrength;
         }
     
@@ -244,6 +255,14 @@ const Game = ({ user, token }) => {
     // Listen to player messages
     socket.on("player_message", (data) => {
       if (data.id === socket.id) {
+        // If player already has a bubble message and he sends a new one, remove the previous message
+        if (playerMessageBubbleRef.current) {
+          app.stage.removeChild(playerMessageBubbleRef.current);
+          app.stage.removeChild(playerMessageTextRef.current);
+          playerMessageTextRef.current.text = "";
+          playerMessageBubbleRef.current = null;
+          playerMessageTextRef.current = null;
+        }
         displayMessageBubble(data.message, player.x, player.y, playerMessageBubbleRef, playerMessageTextRef);
       } else if (otherPlayers[data.id]) {
         const targetPlayer = otherPlayers[data.id];
